@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Furniture | Drey Interior</title>
+  <meta name="description" content="Furniture built from scratch by Drey Interior, made to fit your space.">
+  <meta name="theme-color" content="#0A3B3F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-item">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header id="siteHeader" class="site-header"></header>
+
+  <main id="main">
+
+    <!-- Banner: filled from js/config.js -->
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span><a href="index.html#collections">Collections</a></span>
+          <span><a id="crumbCategory" href="index.html#collections">Category</a></span>
+          <span id="crumbItem">Item</span>
+        </nav>
+        <h1 id="itemTitle">Furniture</h1>
+        <p id="itemSummary">Built from scratch, made to fit your space.</p>
+      </div>
+    </section>
+
+    <!-- Item detail -->
+    <section>
+      <div class="container">
+
+        <div class="item-layout" id="itemLayout" hidden>
+          <div class="gallery">
+            <div class="gallery-main" id="galleryMain" role="img" aria-label="Furniture photo"></div>
+            <div class="gallery-thumbs" id="galleryThumbs"></div>
+          </div>
+
+          <div class="item-info">
+            <h2 id="itemName">Furniture</h2>
+            <p id="itemDescription"></p>
+
+            <dl class="spec-list">
+              <div class="spec-row">
+                <dt>Materials</dt>
+                <dd><div class="chip-list" id="materialsList"></div></dd>
+              </div>
+              <div class="spec-row">
+                <dt>Finishes</dt>
+                <dd><div class="chip-list" id="finishesList"></div></dd>
+              </div>
+              <div class="spec-row">
+                <dt>Price</dt>
+                <dd id="itemPrice">Price on request</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Made</dt>
+                <dd>From scratch, to your measurements</dd>
+              </div>
+            </dl>
+
+            <p class="hint-text" id="priceNote">The final price is confirmed after our site visit, once we have measured your space.</p>
+
+            <div class="hero-actions">
+              <a class="btn btn-primary" id="bookBtn" href="book.html">Book this</a>
+              <a class="btn btn-ghost" id="askBtn" href="#" target="_blank" rel="noopener">Ask on WhatsApp</a>
+            </div>
+          </div>
+        </div>
+
+        <div id="notFound" hidden style="padding: 3rem 0;">
+          <div class="section-head">
+            <h2>We could not find that piece</h2>
+            <p>It may have moved. Choose a room from the collections instead.</p>
+          </div>
+          <a class="btn btn-primary" href="index.html#collections">View all rooms</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- More from the same room -->
+    <section class="section section-alt" id="moreSection" hidden>
+      <div class="container">
+        <div class="section-head">
+          <h2 id="moreTitle">More from this room</h2>
+        </div>
+        <div class="type-grid" id="moreGrid"></div>
+      </div>
+    </section>
+
+    <!-- Booking call to action -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Ready to start?</h2>
+            <p>Book a site visit. We will come to you, measure, and plan your furniture together.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" id="ctaBook" href="book.html">Book a site visit</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="siteFooter" class="site-footer"></footer>
+
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var D = window.DREY;
+      var C = window.DREY_CONFIG;
+      var U = window.DREYUI;
+
+      var params = new URLSearchParams(window.location.search);
+      var catSlug = params.get("c");
+      var itemId = params.get("i");
+
+      var category = D.getCategory(catSlug);
+      var item = D.getItem(catSlug, itemId);
+
+      var layout = document.getElementById("itemLayout");
+      var notFound = document.getElementById("notFound");
+
+      if (!category || !item) {
+        document.getElementById("itemTitle").textContent = "Collections";
+        document.getElementById("itemSummary").textContent = "Choose a room to see what we build.";
+        document.getElementById("crumbItem").textContent = "Not found";
+        notFound.hidden = false;
+        U.refreshIcons();
+        return;
+      }
+
+      /* ---------- Page text ---------- */
+      document.title = item.name + " | " + C.business.name;
+      var metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", item.name + " built from scratch by " + C.business.name + ". " + item.description);
+      }
+
+      document.getElementById("itemTitle").textContent = item.name;
+      document.getElementById("itemSummary").textContent = category.name + " furniture, built from scratch to fit your space.";
+      document.getElementById("itemName").textContent = item.name;
+      document.getElementById("itemDescription").textContent = item.description;
+
+      var crumbCat = document.getElementById("crumbCategory");
+      crumbCat.textContent = category.name;
+      crumbCat.href = "category.html?c=" + encodeURIComponent(category.slug);
+      document.getElementById("crumbItem").textContent = item.name;
+
+      /* ---------- Specs ---------- */
+      function chips(list) {
+        if (!list || !list.length) return '<span class="chip">On request</span>';
+        return list.map(function (x) { return '<span class="chip">' + U.esc(x) + "</span>"; }).join("");
+      }
+      document.getElementById("materialsList").innerHTML = chips(item.materials);
+      document.getElementById("finishesList").innerHTML = chips(item.finishes);
+      document.getElementById("itemPrice").textContent = D.formatPrice(item.price);
+
+      /* ---------- Gallery ---------- */
+      var photos = [];
+      if (item.image) photos.push(item.image);
+      (item.gallery || []).forEach(function (src) {
+        if (src && photos.indexOf(src) === -1) photos.push(src);
+      });
+
+      var main = document.getElementById("galleryMain");
+      var thumbs = document.getElementById("galleryThumbs");
+
+      function showPhoto(index) {
+        main.style.backgroundImage = 'url("' + photos[index] + '")';
+        main.innerHTML = "";
+        var all = thumbs.querySelectorAll(".gallery-thumb");
+        Array.prototype.forEach.call(all, function (t, i) {
+          t.classList.toggle("active", i === index);
+        });
+      }
+
+      if (photos.length) {
+        main.setAttribute("aria-label", item.name);
+        if (photos.length > 1) {
+          thumbs.innerHTML = photos.map(function (src, i) {
+            return '<button type="button" class="gallery-thumb' + (i === 0 ? " active" : "") + '" data-index="' + i + '" aria-label="Show photo ' + (i + 1) + '" style="background-image:url(\'' + U.esc(src) + '\')"></button>';
+          }).join("");
+          thumbs.addEventListener("click", function (event) {
+            var btn = event.target.closest(".gallery-thumb");
+            if (btn) showPhoto(Number(btn.getAttribute("data-index")));
+          });
+        } else {
+          thumbs.hidden = true;
+        }
+        showPhoto(0);
+      } else {
+        /* No photos yet: calm placeholder */
+        thumbs.hidden = true;
+        main.setAttribute("aria-label", "Photo of " + item.name + " coming soon");
+        main.style.display = "flex";
+        main.style.alignItems = "center";
+        main.style.justifyContent = "center";
+        main.style.color = "var(--oak-dark)";
+        main.innerHTML = U.icon(U.categoryIcon(category.slug));
+        var svgSlot = main.querySelector("i");
+        if (svgSlot) {
+          svgSlot.style.width = "56px";
+          svgSlot.style.height = "56px";
+          svgSlot.style.opacity = "0.6";
+        }
+      }
+
+      /* ---------- Buttons ---------- */
+      var bookUrl = "book.html?c=" + encodeURIComponent(category.slug) + "&i=" + encodeURIComponent(item.id);
+      document.getElementById("bookBtn").href = bookUrl;
+      document.getElementById("ctaBook").href = bookUrl;
+
+      var ask = document.getElementById("askBtn");
+      ask.href = U.whatsappHref("Hello " + C.business.name + ", I am interested in " + item.name + " (" + category.name + ").");
+      if (D.isSet(C.business.whatsapp)) {
+        ask.target = "_blank";
+        ask.rel = "noopener";
+      } else {
+        ask.removeAttribute("target");
+        ask.textContent = "Contact us";
+        ask.href = "contact.html";
+      }
+
+      /* ---------- More from this room ---------- */
+      var others = category.items.filter(function (x) { return x.id !== item.id; }).slice(0, 3);
+      if (others.length) {
+        document.getElementById("moreTitle").textContent = "More " + category.name.toLowerCase() + " furniture";
+        document.getElementById("moreGrid").innerHTML = others.map(function (x) {
+          var img = x.image || (x.gallery && x.gallery[0]) || "";
+          var media = img
+            ? '<div class="category-card-media"' + U.bg(img) + "></div>"
+            : '<div class="category-card-media">' + U.icon(U.categoryIcon(category.slug)) + "</div>";
+          return '<a class="category-card" href="item.html?c=' + encodeURIComponent(category.slug) + "&i=" + encodeURIComponent(x.id) + '">' +
+            media +
+            '<div class="category-card-body"><h3>' + U.esc(x.name) + "</h3><p>" + U.esc(x.description) + "</p></div>" +
+            "</a>";
+        }).join("");
+        document.getElementById("moreSection").hidden = false;
+      }
+
+      layout.hidden = false;
+      U.refreshIcons();
+    })();
+  </script>
+</body>
+</html>

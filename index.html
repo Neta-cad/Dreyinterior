@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Drey Interior | Furniture Built from Scratch in Nigeria</title>
+  <meta name="description" content="Custom furniture built from scratch for parlor, dining, kitchen, wardrobes, bedroom and office. We visit, measure and deliver across Nigeria. Book online.">
+  <meta name="theme-color" content="#17120F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-home">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Header is built by js/main.js so every page shares it -->
+  <header id="siteHeader" class="site-header"></header>
+
+  <main id="main">
+
+    <!-- 1. HERO -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1 data-bind="tagline">Built from scratch, made to fit your space</h1>
+          <p class="hero-sub" data-bind="shortDescription">
+            We visit your home, measure your space and build every piece of furniture from scratch. Serving customers across Nigeria.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="book.html">Book a site visit</a>
+            <a class="btn btn-ghost" href="#collections">Explore collections</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" id="heroVisual" data-image="assets/images/hero.jpg" role="img" aria-label="Featured furniture from Drey Interior">
+          <span class="hero-visual-note">Featured work</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. SHOP BY ROOM (tiles built from js/config.js) -->
+    <section class="section" id="collections">
+      <div class="container">
+        <div class="section-head">
+          <h2>Shop by room</h2>
+          <p>Choose a room to see every type of furniture we build for it.</p>
+        </div>
+        <div class="category-grid" id="categoryGrid"></div>
+      </div>
+    </section>
+
+    <!-- 3. BUILT FROM SCRATCH -->
+    <section class="section section-alt" id="from-scratch">
+      <div class="container split">
+        <div class="split-visual" id="scratchVisual" data-image="assets/images/workshop.jpg" role="img" aria-label="Furniture being built in the Drey Interior workshop">
+          <span class="hero-visual-note">Our workshop</span>
+        </div>
+        <div class="split-copy">
+          <h2>Nothing off the shelf</h2>
+          <p>Every sofa, table, kitchen and wardrobe is designed and built from scratch for your space. We come to you, take the measurements ourselves, and agree every detail before we start.</p>
+          <p>You choose the material, the finish and the color. We build it to fit.</p>
+          <a class="btn btn-primary" href="services.html">See our services</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. HOW IT WORKS (steps built from js/config.js) -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-head">
+          <h2>How it works</h2>
+          <p>No account needed. Four simple steps from booking to delivery.</p>
+        </div>
+        <ol class="steps" id="processList"></ol>
+      </div>
+    </section>
+
+    <!-- 5. FEATURED PIECES (one from each room, built from js/config.js) -->
+    <section class="section section-alt" id="featured">
+      <div class="container">
+        <div class="section-head">
+          <h2>Featured pieces</h2>
+          <p>A closer look at what we build.</p>
+        </div>
+        <div class="featured-grid" id="featuredGrid"></div>
+      </div>
+    </section>
+
+    <!-- 6. WHY CHOOSE US (built from js/config.js) -->
+    <section class="section" id="why-us">
+      <div class="container">
+        <div class="section-head">
+          <h2>Why choose Drey Interior</h2>
+        </div>
+        <ul class="highlight-list" id="highlightList"></ul>
+      </div>
+    </section>
+
+    <!-- 7. FAQ -->
+    <section class="section section-alt" id="faq">
+      <div class="container container-narrow">
+        <div class="section-head">
+          <h2>Questions people ask</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Do I need to measure my space?</summary>
+            <p>No. We visit your home or office and take every measurement ourselves, so each piece fits exactly.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you visit and deliver outside Lagos?</summary>
+            <p>Yes. We visit and deliver in every state in Nigeria. Choose your state when you book.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How does payment work?</summary>
+            <p>You pay a site visit fee when you book. If you go ahead with an order, that fee is deducted from the final price. After you approve your quote, you pay a deposit to start building, and the balance is paid on delivery.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can you build something that is not on the website?</summary>
+            <p>Yes. Everything is built from scratch, so if you can describe it or show us a picture, we can build it.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. BOOKING CALL TO ACTION -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Have a space in mind?</h2>
+            <p>Book a site visit and we will come to you, measure, and plan your furniture together.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="book.html">Book a site visit</a>
+            <a class="btn btn-ghost" id="ctaWhatsapp" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer and floating WhatsApp button are built by js/main.js -->
+  <footer id="siteFooter" class="site-footer"></footer>
+
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

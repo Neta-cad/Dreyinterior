@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collections | Drey Interior</title>
+  <meta name="description" content="Browse every type of furniture Drey Interior builds from scratch, room by room.">
+  <meta name="theme-color" content="#0A3B3F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-category">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header id="siteHeader" class="site-header"></header>
+
+  <main id="main">
+
+    <!-- Banner: filled from the category in js/config.js -->
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span><a href="index.html#collections">Collections</a></span>
+          <span id="crumbCategory">Category</span>
+        </nav>
+        <h1 id="categoryTitle">Collections</h1>
+        <p id="categoryBlurb">Choose a type of furniture to see more.</p>
+      </div>
+    </section>
+
+    <!-- Furniture types in this room -->
+    <section class="section">
+      <div class="container">
+        <div class="type-grid" id="typeGrid"></div>
+
+        <div id="notFound" hidden>
+          <div class="section-head">
+            <h2>We could not find that room</h2>
+            <p>It may have moved. Choose a room from the collections instead.</p>
+          </div>
+          <a class="btn btn-primary" href="index.html#collections">View all rooms</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other rooms -->
+    <section class="section section-alt" id="otherRooms" hidden>
+      <div class="container">
+        <div class="section-head">
+          <h2>Other rooms</h2>
+        </div>
+        <div class="category-grid" id="otherGrid"></div>
+      </div>
+    </section>
+
+    <!-- Booking call to action -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Not sure what you need?</h2>
+            <p>Book a site visit. We will come to you, measure, and plan your furniture together.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" id="ctaBook" href="book.html">Book a site visit</a>
+            <a class="btn btn-ghost" id="ctaWhatsapp" href="#" target="_blank" rel="noopener">Chat on WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="siteFooter" class="site-footer"></footer>
+
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var D = window.DREY;
+      var C = window.DREY_CONFIG;
+      var U = window.DREYUI;
+
+      var params = new URLSearchParams(window.location.search);
+      var slug = params.get("c");
+      var category = D.getCategory(slug);
+
+      var grid = document.getElementById("typeGrid");
+      var notFound = document.getElementById("notFound");
+
+      if (!category) {
+        document.getElementById("categoryTitle").textContent = "Collections";
+        document.getElementById("categoryBlurb").textContent = "Choose a room to see what we build.";
+        document.getElementById("crumbCategory").textContent = "Not found";
+        grid.hidden = true;
+        notFound.hidden = false;
+        U.refreshIcons();
+        return;
+      }
+
+      /* Page text */
+      document.title = category.name + " | " + C.business.name;
+      document.getElementById("categoryTitle").textContent = category.name;
+      document.getElementById("categoryBlurb").textContent = category.blurb;
+      document.getElementById("crumbCategory").textContent = category.name;
+
+      /* Furniture types as cards */
+      grid.innerHTML = category.items.map(function (item) {
+        var img = item.image || (item.gallery && item.gallery[0]) || "";
+        var media = img
+          ? '<div class="category-card-media"' + U.bg(img) + "></div>"
+          : '<div class="category-card-media">' + U.icon(U.categoryIcon(category.slug)) + "</div>";
+        return '<a class="category-card" href="item.html?c=' + encodeURIComponent(category.slug) + "&i=" + encodeURIComponent(item.id) + '">' +
+          media +
+          '<div class="category-card-body"><h3>' + U.esc(item.name) + "</h3><p>" + U.esc(item.description) + "</p></div>" +
+          "</a>";
+      }).join("");
+
+      /* Other rooms */
+      var others = C.categories.filter(function (c) { return c.slug !== category.slug; });
+      if (others.length) {
+        document.getElementById("otherGrid").innerHTML = others.map(function (cat) {
+          var media = cat.image
+            ? '<div class="category-card-media"' + U.bg(cat.image) + "></div>"
+            : '<div class="category-card-media">' + U.icon(U.categoryIcon(cat.slug)) + "</div>";
+          return '<a class="category-card" href="category.html?c=' + encodeURIComponent(cat.slug) + '">' +
+            media +
+            '<div class="category-card-body"><h3>' + U.esc(cat.name) + "</h3><p>" + U.esc(cat.blurb) + "</p></div>" +
+            "</a>";
+        }).join("");
+        document.getElementById("otherRooms").hidden = false;
+      }
+
+      /* Call to action buttons */
+      var wa = document.getElementById("ctaWhatsapp");
+      wa.href = U.whatsappHref("Hello " + C.business.name + ", I am interested in " + category.name.toLowerCase() + " furniture.");
+      if (D.isSet(C.business.whatsapp)) {
+        wa.target = "_blank";
+        wa.rel = "noopener";
+      } else {
+        wa.removeAttribute("target");
+        wa.textContent = "Contact us";
+      }
+
+      U.refreshIcons();
+    })();
+  </script>
+</body>
+</html>
