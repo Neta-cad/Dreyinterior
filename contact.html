@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact | Drey Interior</title>
+  <meta name="description" content="Contact Drey Interior on WhatsApp or send a message. We build furniture from scratch and visit homes across Nigeria.">
+  <meta name="theme-color" content="#0A3B3F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    .contact-layout { display: grid; gap: 2rem; }
+    .contact-list { display: grid; gap: 0.9rem; align-content: start; }
+    .contact-card {
+      display: flex; gap: 1rem; align-items: flex-start;
+      background: var(--white); border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 1.1rem 1.2rem;
+    }
+    a.contact-card:hover { border-color: var(--teal); }
+    .contact-card svg { width: 26px; height: 26px; color: var(--teal); flex: none; margin-top: 0.15rem; }
+    .contact-card h3 { font-size: 1.05rem; margin: 0 0 0.15rem; }
+    .contact-card p { margin: 0; color: var(--muted); word-break: break-word; }
+    .contact-card-primary { background: var(--teal-dark); border-color: var(--teal-dark); }
+    .contact-card-primary svg { color: var(--oak); }
+    .contact-card-primary h3 { color: var(--white); }
+    .contact-card-primary p { color: #CFE0DD; }
+    a.contact-card-primary:hover { border-color: var(--oak); }
+    @media (min-width: 900px) {
+      .contact-layout { grid-template-columns: 0.9fr 1.1fr; gap: 3rem; align-items: start; }
+    }
+  </style>
+</head>
+<body class="page-contact">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header id="siteHeader" class="site-header"></header>
+
+  <main id="main">
+
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span>Contact</span>
+        </nav>
+        <h1>Contact us</h1>
+        <p>Have a question or an idea? Message us and we will reply as soon as we can.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="contact-layout">
+
+          <!-- Contact details (only details that are filled in appear) -->
+          <div>
+            <div class="section-head" style="margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.6rem;">Reach us directly</h2>
+            </div>
+            <div class="contact-list" id="contactList"></div>
+          </div>
+
+          <!-- Message form -->
+          <div class="form-card">
+            <form id="contactForm" novalidate>
+              <h3>Send a message</h3>
+
+              <div class="alert alert-error" id="contactAlert" role="alert" hidden></div>
+              <div class="alert alert-success" id="contactSuccess" role="status" hidden></div>
+
+              <div class="field" id="f-cname">
+                <label for="cname">Your name</label>
+                <input id="cname" type="text" autocomplete="name" placeholder="Your full name">
+                <div class="field-error" id="err-cname" hidden></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field" id="f-cphone">
+                  <label for="cphone">Phone number</label>
+                  <input id="cphone" type="tel" autocomplete="tel" inputmode="tel" placeholder="e.g. 0801 234 5678">
+                  <div class="field-error" id="err-cphone" hidden></div>
+                </div>
+                <div class="field" id="f-ctopic">
+                  <label for="ctopic">What is this about?</label>
+                  <select id="ctopic">
+                    <option>General question</option>
+                    <option>Custom furniture</option>
+                    <option>Booking a site visit</option>
+                    <option>An existing booking</option>
+                    <option>Something else</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field" id="f-cmessage">
+                <label for="cmessage">Your message</label>
+                <textarea id="cmessage" placeholder="Tell us what you need"></textarea>
+                <div class="field-error" id="err-cmessage" hidden></div>
+              </div>
+
+              <!-- Spam trap -->
+              <div style="position:absolute; left:-9999px;" aria-hidden="true">
+                <label for="cwebsite">Leave this empty</label>
+                <input id="cwebsite" type="text" tabindex="-1" autocomplete="off">
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block" id="contactBtn">Send message</button>
+              <p class="hint-text" id="contactNote" style="margin: 0.9rem 0 0; color: var(--muted); font-size: 0.9rem;"></p>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking call to action -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>Want us to come and measure?</h2>
+            <p>Book a site visit and we will plan your furniture together, on site.</p>
+          </div>
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="book.html">Book a site visit</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="siteFooter" class="site-footer"></footer>
+
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var D = window.DREY;
+      var C = window.DREY_CONFIG;
+      var U = window.DREYUI;
+      var B = C.business;
+
+      function el(id) { return document.getElementById(id); }
+
+      /* ---------- Contact cards ---------- */
+      function card(iconName, title, text, href, primary, external) {
+        var inner = U.icon(iconName) + "<div><h3>" + U.esc(title) + "</h3><p>" + U.esc(text) + "</p></div>";
+        var cls = "contact-card" + (primary ? " contact-card-primary" : "");
+        if (href) {
+          return '<a class="' + cls + '" href="' + U.esc(href) + '"' +
+            (external ? ' target="_blank" rel="noopener"' : "") + ">" + inner + "</a>";
+        }
+        return '<div class="' + cls + '">' + inner + "</div>";
+      }
+
+      var cards = "";
+      if (D.isSet(B.whatsapp)) {
+        cards += card("message-circle", "WhatsApp", "Chat with us. The fastest way to reach us.",
+          D.whatsappLink("Hello " + B.name + ", I would like to ask about your furniture."), true, true);
+      }
+      if (D.isSet(B.phone)) {
+        cards += card("phone", "Phone", B.phone, "tel:" + String(B.phone).replace(/\s+/g, ""), false, false);
+      }
+      if (D.isSet(B.email)) {
+        cards += card("mail", "Email", B.email, "mailto:" + B.email, false, false);
+      }
+      if (D.isSet(B.address)) {
+        cards += card("map-pin", "Workshop / showroom", B.address, "", false, false);
+      }
+      if (B.workingHours) {
+        cards += card("clock", "Working hours", B.workingHours, "", false, false);
+      }
+      if (B.coverage === "nationwide") {
+        cards += card("truck", "Where we work", "Site visits and delivery in every state in Nigeria.", "", false, false);
+      }
+      el("contactList").innerHTML = cards;
+
+      /* ---------- Form ---------- */
+      var form = el("contactForm");
+      var alertBox = el("contactAlert");
+      var successBox = el("contactSuccess");
+
+      if (D.isSet(B.whatsapp)) {
+        el("contactNote").textContent = "When you tap send, WhatsApp opens with your message ready. Just press send there.";
+      } else if (D.isSet(B.email)) {
+        el("contactNote").textContent = "When you tap send, your email app opens with your message ready.";
+      } else {
+        el("contactNote").textContent = "Contact details are being set up. Please check back soon.";
+      }
+
+      function setError(id, message) {
+        var field = el("f-" + id);
+        var box = el("err-" + id);
+        field.classList.toggle("invalid", Boolean(message));
+        box.hidden = !message;
+        box.textContent = message || "";
+      }
+
+      var rules = [
+        ["cname",    function (v) { return v.trim().length >= 2; }, "Please enter your name."],
+        ["cphone",   function (v) { return v.replace(/\D/g, "").length >= 10; }, "Enter a valid phone number."],
+        ["cmessage", function (v) { return v.trim().length >= 5; }, "Please write a short message."]
+      ];
+
+      rules.forEach(function (rule) {
+        el(rule[0]).addEventListener("input", function () { setError(rule[0], ""); });
+      });
+
+      function validate() {
+        var firstBad = null;
+        rules.forEach(function (rule) {
+          var ok = rule[1](el(rule[0]).value);
+          setError(rule[0], ok ? "" : rule[2]);
+          if (!ok && !firstBad) firstBad = rule[0];
+        });
+        if (firstBad) el(firstBad).focus();
+        return !firstBad;
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        alertBox.hidden = true;
+        successBox.hidden = true;
+
+        if (el("cwebsite").value) return;   // spam trap
+        if (!validate()) return;
+
+        var text =
+          "Hello " + B.name + ",\n" +
+          "Topic: " + el("ctopic").value + "\n" +
+          "Name: " + el("cname").value.trim() + "\n" +
+          "Phone: " + el("cphone").value.trim() + "\n\n" +
+          el("cmessage").value.trim();
+
+        if (D.isSet(B.whatsapp)) {
+          window.open(D.whatsappLink(text), "_blank", "noopener");
+        } else if (D.isSet(B.email)) {
+          window.location.href = "mailto:" + B.email +
+            "?subject=" + encodeURIComponent(el("ctopic").value + " - " + el("cname").value.trim()) +
+            "&body=" + encodeURIComponent(text);
+        } else {
+          alertBox.textContent = "Sorry, we cannot take messages here yet. Please try again soon.";
+          alertBox.hidden = false;
+          return;
+        }
+
+        successBox.textContent = "Thank you. Your message is ready, please press send in the app that opened.";
+        successBox.hidden = false;
+        form.reset();
+      });
+
+      U.refreshIcons();
+    })();
+  </script>
+</body>
+</html>

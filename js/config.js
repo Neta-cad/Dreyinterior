@@ -187,11 +187,11 @@ window.DREY_CONFIG = {
     }
   },
 
-  /* ---------- BACKEND (for bookings and admin dashboard) ---------- */
+  /* ---------- BACKEND (bookings and admin dashboard) ---------- */
   backend: {
     provider: "supabase",
-    supabaseUrl: "TO_BE_ADDED",
-    supabaseAnonKey: "TO_BE_ADDED",
+    supabaseUrl: "https://aluemsmmwqehsvjcjpfn.supabase.co",
+    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdWVtc21td3FlaHN2amNqcGZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NDA1MDksImV4cCI6MjEwNzUxNjUwOX0.vC2HKsn2t_lj-5EJsRq67OZ5D3IUY5n8GbT1Yqy3SlI",
     bookingsTable: "bookings"
   },
 

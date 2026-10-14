@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin | Drey Interior</title>
+  <meta name="theme-color" content="#0A3B3F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    .admin-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .admin-head h1 { font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 0; }
+    .login-card { max-width: 440px; margin: 2rem auto; }
+    .toolbar { display: grid; gap: 0.75rem; grid-template-columns: 1fr; margin-bottom: 1.25rem; }
+    .toolbar .field { margin: 0; }
+    @media (min-width: 700px) { .toolbar { grid-template-columns: 220px 1fr auto; align-items: end; } }
+
+    .booking-list { display: grid; gap: 1rem; }
+    .booking-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; }
+    .booking-top { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .booking-top h3 { margin: 0; font-size: 1.2rem; }
+    .booking-ref { color: var(--muted); font-size: 0.85rem; }
+    .badges { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: flex-start; }
+    .booking-grid { display: grid; gap: 0.5rem 1.5rem; grid-template-columns: 1fr; margin-bottom: 1rem; }
+    @media (min-width: 700px) { .booking-grid { grid-template-columns: 1fr 1fr; } }
+    .booking-grid dt { color: var(--muted); font-size: 0.82rem; }
+    .booking-grid dd { margin: 0 0 0.35rem; word-break: break-word; }
+    .booking-grid a { color: var(--teal); text-decoration: underline; }
+    .booking-note { background: var(--soft); border-radius: 2px; padding: 0.7rem 0.9rem; margin-bottom: 1rem; font-size: 0.95rem; }
+    .booking-controls { display: grid; gap: 0.75rem; grid-template-columns: 1fr; border-top: 1px solid var(--line); padding-top: 1rem; }
+    @media (min-width: 700px) { .booking-controls { grid-template-columns: 1fr 1fr; } }
+    .booking-controls .field { margin: 0; }
+    .booking-controls .wide { grid-column: 1 / -1; }
+    .booking-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .saved-msg { color: var(--success); font-size: 0.9rem; }
+    .empty { text-align: center; padding: 2.5rem 1rem; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--radius); }
+  </style>
+</head>
+<body class="page-admin">
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <span class="brand"><span>Drey Interior</span>&nbsp;<span style="color: var(--muted); font-size: 1rem;">admin</span></span>
+      <button type="button" class="btn btn-ghost" id="logoutBtn" hidden style="min-height: 42px; padding: 0.5rem 1.1rem;">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-wrap">
+    <div class="container">
+
+      <!-- Shown until Supabase details are added to config.js -->
+      <section id="setupView" hidden>
+        <div class="alert alert-info">
+          The dashboard is not connected yet. Add the Supabase URL and anon key to <strong>js/config.js</strong>, then reload this page.
+        </div>
+      </section>
+
+      <!-- Login -->
+      <section id="loginView" hidden>
+        <div class="form-card login-card">
+          <h2 style="font-size: 1.6rem;">Admin login</h2>
+          <div class="alert alert-error" id="loginAlert" role="alert" hidden></div>
+          <form id="loginForm" novalidate>
+            <div class="field">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" autocomplete="username" inputmode="email">
+            </div>
+            <div class="field">
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" type="password" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Log in</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashView" hidden>
+        <div class="admin-head">
+          <h1>Bookings</h1>
+        </div>
+
+        <div class="stat-grid" id="stats"></div>
+
+        <div class="alert alert-error" id="dashAlert" role="alert" hidden></div>
+
+        <div class="toolbar">
+          <div class="field">
+            <label for="filterStatus">Show</label>
+            <select id="filterStatus"></select>
+          </div>
+          <div class="field">
+            <label for="searchBox">Search</label>
+            <input id="searchBox" type="search" placeholder="Name, phone, reference or state">
+          </div>
+          <button type="button" class="btn btn-ghost" id="refreshBtn">Refresh</button>
+        </div>
+
+        <div class="booking-list" id="bookingList"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var C = window.DREY_CONFIG;
+      var D = window.DREY;
+      var B = C.backend;
+
+      function el(id) { return document.getElementById(id); }
+
+      function esc(value) {
+        var map = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+        return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) { return map[ch]; });
+      }
+
+      var STATUSES = [
+        { value: "new",              label: "New" },
+        { value: "contacted",        label: "Contacted" },
+        { value: "visit_scheduled",  label: "Visit scheduled" },
+        { value: "quote_sent",       label: "Quote sent" },
+        { value: "in_production",    label: "In production" },
+        { value: "delivered",        label: "Delivered" },
+        { value: "cancelled",        label: "Cancelled" }
+      ];
+
+      var PAYMENTS = [
+        { value: "pending",          label: "Nothing paid yet" },
+        { value: "visit_fee_paid",   label: "Visit fee paid" },
+        { value: "deposit_paid",     label: "Deposit paid" },
+        { value: "paid_in_full",     label: "Paid in full" }
+      ];
+
+      function labelFor(list, value) {
+        var found = list.filter(function (x) { return x.value === value; })[0];
+        return found ? found.label : value;
+      }
+
+      function statusBadge(value) {
+        var cls = "badge-pending";
+        if (value === "new") cls = "badge-new";
+        else if (value === "delivered") cls = "badge-done";
+        else if (value === "cancelled") cls = "badge-cancelled";
+        else if (value !== "contacted") cls = "badge-paid";
+        return '<span class="badge ' + cls + '">' + esc(labelFor(STATUSES, value)) + "</span>";
+      }
+
+      function paymentBadge(value) {
+        var cls = value === "pending" ? "badge-pending" : "badge-paid";
+        return '<span class="badge ' + cls + '">' + esc(labelFor(PAYMENTS, value)) + "</span>";
+      }
+
+      /* ---------- Views ---------- */
+      function show(which) {
+        el("setupView").hidden = which !== "setup";
+        el("loginView").hidden = which !== "login";
+        el("dashView").hidden = which !== "dash";
+        el("logoutBtn").hidden = which !== "dash";
+      }
+
+      if (!D.isSet(B.supabaseUrl) || !D.isSet(B.supabaseAnonKey) || !window.supabase) {
+        show("setup");
+        return;
+      }
+
+      var db = window.supabase.createClient(B.supabaseUrl, B.supabaseAnonKey);
+      var TABLE = B.bookingsTable;
+      var bookings = [];
+
+      /* ---------- Login ---------- */
+      el("loginForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var alertBox = el("loginAlert");
+        alertBox.hidden = true;
+
+        var email = el("loginEmail").value.trim();
+        var password = el("loginPassword").value;
+        if (!email || !password) {
+          alertBox.textContent = "Enter your email and password.";
+          alertBox.hidden = false;
+          return;
+        }
+
+        var btn = el("loginBtn");
+        btn.disabled = true;
+        btn.textContent = "Logging in...";
+
+        db.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
+          btn.disabled = false;
+          btn.textContent = "Log in";
+          if (res.error) {
+            alertBox.textContent = "Login failed. Check your email and password.";
+            alertBox.hidden = false;
+            return;
+          }
+          el("loginPassword").value = "";
+          openDashboard();
+        });
+      });
+
+      el("logoutBtn").addEventListener("click", function () {
+        db.auth.signOut().then(function () {
+          bookings = [];
+          show("login");
+        });
+      });
+
+      /* ---------- Loading ---------- */
+      function openDashboard() {
+        show("dash");
+        loadBookings();
+      }
+
+      function loadBookings() {
+        el("dashAlert").hidden = true;
+        el("bookingList").innerHTML = '<div class="empty">Loading bookings...</div>';
+
+        db.from(TABLE).select("*").order("created_at", { ascending: false }).limit(500).then(function (res) {
+          if (res.error) {
+            el("dashAlert").textContent = "Could not load bookings. Check that the table and policies from the setup step are in place.";
+            el("dashAlert").hidden = false;
+            el("bookingList").innerHTML = "";
+            return;
+          }
+          bookings = res.data || [];
+          render();
+        });
+      }
+
+      /* ---------- Rendering ---------- */
+      function formatDate(value) {
+        if (!value) return "";
+        var d = new Date(value + "T00:00:00");
+        return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      function formatCreated(value) {
+        return new Date(value).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+      }
+
+      function customerWhatsapp(phone) {
+        var digits = String(phone || "").replace(/\D/g, "");
+        if (digits.charAt(0) === "0" && digits.length === 11) digits = "234" + digits.slice(1);
+        return digits ? "https://wa.me/" + digits : "";
+      }
+
+      function renderStats() {
+        var today = new Date().toISOString().slice(0, 10);
+        var total = bookings.length;
+        var fresh = bookings.filter(function (b) { return b.status === "new"; }).length;
+        var upcoming = bookings.filter(function (b) {
+          return b.visit_date >= today && b.status !== "cancelled" && b.status !== "delivered";
+        }).length;
+        var paid = bookings.filter(function (b) { return b.payment_status !== "pending"; }).length;
+
+        function stat(value, label) {
+          return '<div class="stat"><div class="stat-value">' + value + '</div><div class="stat-label">' + label + "</div></div>";
+        }
+        el("stats").innerHTML =
+          stat(total, "Total bookings") +
+          stat(fresh, "New") +
+          stat(upcoming, "Upcoming visits") +
+          stat(paid, "With a payment");
+      }
+
+      function options(list, selected) {
+        return list.map(function (x) {
+          return '<option value="' + esc(x.value) + '"' + (x.value === selected ? " selected" : "") + ">" + esc(x.label) + "</option>";
+        }).join("");
+      }
+
+      function row(label, value) {
+        if (!value) return "";
+        return "<div><dt>" + esc(label) + "</dt><dd>" + value + "</dd></div>";
+      }
+
+      function renderCard(b) {
+        var wa = customerWhatsapp(b.phone);
+        var furniture = [b.category, b.item_name].filter(Boolean).join(" - ");
+
+        return '<article class="booking-card" data-id="' + esc(b.id) + '">' +
+          '<div class="booking-top">' +
+            "<div><h3>" + esc(b.customer_name) + '</h3><div class="booking-ref">' + esc(b.reference) + " &middot; booked " + esc(formatCreated(b.created_at)) + "</div></div>" +
+            '<div class="badges">' + statusBadge(b.status) + paymentBadge(b.payment_status) + "</div>" +
+          "</div>" +
+          '<dl class="booking-grid">' +
+            row("Visit", esc(formatDate(b.visit_date)) + (b.visit_time ? " (" + esc(b.visit_time) + ")" : "")) +
+            row("Phone", '<a href="tel:' + esc(String(b.phone).replace(/\s+/g, "")) + '">' + esc(b.phone) + "</a>" +
+              (wa ? ' &middot; <a href="' + esc(wa) + '" target="_blank" rel="noopener">WhatsApp</a>' : "")) +
+            row("Email", '<a href="mailto:' + esc(b.email) + '">' + esc(b.email) + "</a>") +
+            row("Location", esc(b.address) + ", " + esc(b.state)) +
+            row("Furniture", esc(furniture)) +
+            row("Space", esc(b.room_type)) +
+            row("Budget", esc(b.budget)) +
+            row("Visit fee", b.visit_fee ? esc(C.business.currencySymbol + Number(b.visit_fee).toLocaleString("en-NG")) : "") +
+          "</dl>" +
+          (b.notes ? '<div class="booking-note"><strong>Customer notes:</strong> ' + esc(b.notes) + "</div>" : "") +
+          '<div class="booking-controls">' +
+            '<div class="field"><label>Booking status</label><select data-field="status">' + options(STATUSES, b.status) + "</select></div>" +
+            '<div class="field"><label>Payment</label><select data-field="payment_status">' + options(PAYMENTS, b.payment_status) + "</select></div>" +
+            '<div class="field wide"><label>Your notes (only you see these)</label><textarea data-field="admin_notes" style="min-height: 80px;">' + esc(b.admin_notes || "") + "</textarea></div>" +
+            '<div class="booking-actions wide"><button type="button" class="btn btn-primary" data-action="save">Save changes</button><span class="saved-msg" hidden>Saved</span></div>' +
+          "</div>" +
+        "</article>";
+      }
+
+      function render() {
+        renderStats();
+
+        var filter = el("filterStatus").value;
+        var term = el("searchBox").value.trim().toLowerCase();
+
+        var visible = bookings.filter(function (b) {
+          if (filter && b.status !== filter) return false;
+          if (!term) return true;
+          return [b.customer_name, b.phone, b.reference, b.state, b.email, b.item_name]
+            .join(" ").toLowerCase().indexOf(term) !== -1;
+        });
+
+        if (!visible.length) {
+          el("bookingList").innerHTML = '<div class="empty">' +
+            (bookings.length ? "No bookings match this filter." : "No bookings yet. They will appear here as customers book.") + "</div>";
+          return;
+        }
+        el("bookingList").innerHTML = visible.map(renderCard).join("");
+      }
+
+      el("filterStatus").innerHTML = '<option value="">All bookings</option>' + options(STATUSES, "");
+      el("filterStatus").addEventListener("change", render);
+      el("searchBox").addEventListener("input", render);
+      el("refreshBtn").addEventListener("click", loadBookings);
+
+      /* ---------- Saving ---------- */
+      el("bookingList").addEventListener("click", function (event) {
+        var btn = event.target.closest('[data-action="save"]');
+        if (!btn) return;
+
+        var card = btn.closest(".booking-card");
+        var id = card.getAttribute("data-id");
+        var msg = card.querySelector(".saved-msg");
+
+        var update = {
+          status: card.querySelector('[data-field="status"]').value,
+          payment_status: card.querySelector('[data-field="payment_status"]').value,
+          admin_notes: card.querySelector('[data-field="admin_notes"]').value.trim()
+        };
+
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+        msg.hidden = true;
+
+        db.from(TABLE).update(update).eq("id", id).then(function (res) {
+          btn.disabled = false;
+          btn.textContent = "Save changes";
+          if (res.error) {
+            el("dashAlert").textContent = "Could not save. Please log in again and retry.";
+            el("dashAlert").hidden = false;
+            return;
+          }
+          el("dashAlert").hidden = true;
+          bookings.forEach(function (b) { if (b.id === id) { b.status = update.status; b.payment_status = update.payment_status; b.admin_notes = update.admin_notes; } });
+          renderStats();
+          card.querySelector(".badges").innerHTML = statusBadge(update.status) + paymentBadge(update.payment_status);
+          msg.hidden = false;
+          setTimeout(function () { msg.hidden = true; }, 2500);
+        });
+      });
+
+      /* ---------- Start ---------- */
+      db.auth.getSession().then(function (res) {
+        if (res.data && res.data.session) openDashboard();
+        else show("login");
+      });
+
+      db.auth.onAuthStateChange(function (event) {
+        if (event === "SIGNED_OUT") show("login");
+      });
+    })();
+  </script>
+</body>
+</html>

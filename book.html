@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a Site Visit | Drey Interior</title>
+  <meta name="description" content="Book a site visit with Drey Interior. We come to you, measure your space and plan furniture built from scratch.">
+  <meta name="theme-color" content="#0A3B3F">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="page-book">
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header id="siteHeader" class="site-header"></header>
+
+  <main id="main">
+
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span>Book a site visit</span>
+        </nav>
+        <h1>Book a site visit</h1>
+        <p>Tell us what you need and when. We will come to you, measure your space and plan your furniture together. No account needed.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container-narrow">
+
+        <!-- BOOKING FORM -->
+        <div class="form-card" id="formWrap">
+          <form id="bookingForm" novalidate>
+
+            <div class="alert alert-error" id="formAlert" role="alert" hidden></div>
+
+            <div class="form-section">
+              <h3>What do you need?</h3>
+              <div class="field-row">
+                <div class="field" id="f-category">
+                  <label for="category">Room</label>
+                  <select id="category"></select>
+                </div>
+                <div class="field" id="f-item">
+                  <label for="item">Type of furniture</label>
+                  <select id="item"></select>
+                </div>
+              </div>
+              <div class="field" id="f-room">
+                <label for="room">Space we are furnishing</label>
+                <select id="room"></select>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Your details</h3>
+              <div class="field" id="f-name">
+                <label for="name">Full name</label>
+                <input id="name" type="text" autocomplete="name" placeholder="Your full name">
+                <div class="field-error" id="err-name" hidden></div>
+              </div>
+              <div class="field-row">
+                <div class="field" id="f-phone">
+                  <label for="phone">Phone number</label>
+                  <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="e.g. 0801 234 5678">
+                  <div class="field-error" id="err-phone" hidden></div>
+                </div>
+                <div class="field" id="f-email">
+                  <label for="email">Email</label>
+                  <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+                  <div class="field-error" id="err-email" hidden></div>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field" id="f-state">
+                  <label for="state">State</label>
+                  <select id="state"></select>
+                  <div class="field-error" id="err-state" hidden></div>
+                </div>
+                <div class="field" id="f-address">
+                  <label for="address">Address or area for the visit</label>
+                  <input id="address" type="text" autocomplete="street-address" placeholder="Street, area or landmark">
+                  <div class="field-error" id="err-address" hidden></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>Preferred visit</h3>
+              <div class="field-row">
+                <div class="field" id="f-date">
+                  <label for="date">Preferred date</label>
+                  <input id="date" type="date">
+                  <span class="hint" id="dateHint"></span>
+                  <div class="field-error" id="err-date" hidden></div>
+                </div>
+                <div class="field" id="f-time">
+                  <label for="time">Preferred time</label>
+                  <select id="time">
+                    <option value="Morning">Morning</option>
+                    <option value="Afternoon">Afternoon</option>
+                    <option value="Evening">Evening</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field" id="f-budget">
+                <label for="budget">Budget (optional)</label>
+                <select id="budget"></select>
+              </div>
+              <div class="field" id="f-notes">
+                <label for="notes">Tell us about your idea (optional)</label>
+                <textarea id="notes" placeholder="Style, colors, materials, or anything you have in mind"></textarea>
+              </div>
+            </div>
+
+            <!-- Spam trap: real visitors never see or fill this -->
+            <div style="position:absolute; left:-9999px;" aria-hidden="true">
+              <label for="website">Leave this empty</label>
+              <input id="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="summary-box" id="summaryBox">
+              <div class="summary-row"><span>Site visit fee</span><strong id="sumFee">To be confirmed</strong></div>
+              <p style="margin:0.5rem 0 0; color: var(--muted); font-size: 0.92rem;">If you go ahead with an order, this fee is deducted from your final price.</p>
+              <p style="margin:0.5rem 0 0; color: var(--muted); font-size: 0.92rem;" id="sumNext"></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Book my site visit</button>
+          </form>
+        </div>
+
+        <!-- SUCCESS -->
+        <div class="form-card" id="successWrap" hidden>
+          <div class="alert alert-success" id="successAlert" role="status"></div>
+          <h2 id="successTitle" style="font-size: 1.6rem;">Booking received</h2>
+          <p id="successText"></p>
+          <div class="summary-box" id="successSummary"></div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" id="successWhatsapp" href="#" target="_blank" rel="noopener">Send details on WhatsApp</a>
+            <a class="btn btn-ghost" href="index.html">Back to home</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="siteFooter" class="site-footer"></footer>
+
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      var D = window.DREY;
+      var C = window.DREY_CONFIG;
+      var U = window.DREYUI;
+
+      function el(id) { return document.getElementById(id); }
+
+      /* ---------- Fill the dropdowns ---------- */
+      var catSelect = el("category");
+      var itemSelect = el("item");
+      var roomSelect = el("room");
+      var stateSelect = el("state");
+      var budgetSelect = el("budget");
+
+      catSelect.innerHTML = '<option value="">Not sure yet</option>' +
+        C.categories.map(function (c) {
+          return '<option value="' + U.esc(c.slug) + '">' + U.esc(c.name) + "</option>";
+        }).join("");
+
+      function fillItems(slug, selectedId) {
+        var cat = D.getCategory(slug);
+        var html = '<option value="">' + (cat ? "Choose a type or leave open" : "Choose a room first") + "</option>";
+        if (cat) {
+          html += cat.items.map(function (i) {
+            return '<option value="' + U.esc(i.id) + '">' + U.esc(i.name) + "</option>";
+          }).join("");
+          html += '<option value="custom">Something else (describe below)</option>';
+        }
+        itemSelect.innerHTML = html;
+        itemSelect.disabled = !cat;
+        if (selectedId) itemSelect.value = selectedId;
+      }
+
+      roomSelect.innerHTML = '<option value="">Choose a space</option>' +
+        C.booking.roomTypes.map(function (r) {
+          return '<option value="' + U.esc(r) + '">' + U.esc(r) + "</option>";
+        }).join("");
+
+      stateSelect.innerHTML = '<option value="">Choose your state</option>' +
+        C.states.map(function (s) {
+          return '<option value="' + U.esc(s) + '">' + U.esc(s) + "</option>";
+        }).join("");
+
+      budgetSelect.innerHTML = '<option value="">Prefer not to say</option>' +
+        C.booking.budgetRanges.map(function (b) {
+          return '<option value="' + U.esc(b) + '">' + U.esc(b) + "</option>";
+        }).join("");
+
+      var ROOM_FOR_CATEGORY = {
+        parlor: "Parlor", dining: "Dining room", kitchen: "Kitchen",
+        bedroom: "Bedroom", office: "Office"
+      };
+
+      catSelect.addEventListener("change", function () {
+        fillItems(catSelect.value);
+        if (!roomSelect.value && ROOM_FOR_CATEGORY[catSelect.value]) {
+          roomSelect.value = ROOM_FOR_CATEGORY[catSelect.value];
+        }
+      });
+
+      /* Pre-fill from the item page: book.html?c=dining&i=dining-set */
+      var params = new URLSearchParams(window.location.search);
+      var preCat = params.get("c");
+      var preItem = params.get("i");
+      if (preCat && D.getCategory(preCat)) {
+        catSelect.value = preCat;
+        fillItems(preCat, preItem);
+        if (ROOM_FOR_CATEGORY[preCat]) roomSelect.value = ROOM_FOR_CATEGORY[preCat];
+      } else {
+        fillItems("");
+      }
+
+      /* ---------- Date rules ---------- */
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+      function toInputDate(d) {
+        return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+      }
+      var earliest = new Date();
+      earliest.setDate(earliest.getDate() + (C.booking.minimumLeadDays || 0));
+      var minDate = toInputDate(earliest);
+      el("date").min = minDate;
+      el("dateHint").textContent = "Earliest available date: " + earliest.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+      /* ---------- Payment summary ---------- */
+      function paymentReady() {
+        var p = C.payment;
+        return Boolean(p.enabled) && D.isSet(p.paystackPublicKey) && Number(p.siteVisitFee) > 0;
+      }
+
+      el("sumFee").textContent = D.visitFeeLabel();
+      el("sumNext").textContent = "After the visit you receive a written quote. Approve it and pay a " +
+        C.payment.depositPercent + "% deposit to start building. The balance is paid on delivery.";
+      el("submitBtn").textContent = paymentReady() ? "Pay visit fee and book" : "Book my site visit";
+
+      /* ---------- Validation ---------- */
+      var rules = [
+        ["name",    function (v) { return v.trim().length >= 2; }, "Please enter your full name."],
+        ["phone",   function (v) { return v.replace(/\D/g, "").length >= 10; }, "Enter a valid phone number."],
+        ["email",   function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }, "Enter a valid email address."],
+        ["state",   function (v) { return v !== ""; }, "Please choose your state."],
+        ["address", function (v) { return v.trim().length >= 5; }, "Enter the address or area for the visit."],
+        ["date",    function (v) { return v !== "" && v >= minDate; }, "Choose a date on or after " + minDate + "."]
+      ];
+
+      function setError(id, message) {
+        var field = el("f-" + id);
+        var box = el("err-" + id);
+        if (!field || !box) return;
+        field.classList.toggle("invalid", Boolean(message));
+        box.hidden = !message;
+        box.textContent = message || "";
+      }
+
+      function validate() {
+        var firstBad = null;
+        rules.forEach(function (rule) {
+          var ok = rule[1](el(rule[0]).value);
+          setError(rule[0], ok ? "" : rule[2]);
+          if (!ok && !firstBad) firstBad = rule[0];
+        });
+        if (firstBad) el(firstBad).focus();
+        return !firstBad;
+      }
+
+      rules.forEach(function (rule) {
+        el(rule[0]).addEventListener("input", function () { setError(rule[0], ""); });
+        el(rule[0]).addEventListener("change", function () { setError(rule[0], ""); });
+      });
+
+      /* ---------- Building the booking ---------- */
+      var booking = null;       // stays the same if the customer retries payment
+      var alreadySaved = false;
+
+      function makeReference() {
+        var rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+        return "DRY-" + Date.now().toString(36).toUpperCase() + rand;
+      }
+
+      function collect() {
+        var cat = D.getCategory(catSelect.value);
+        var item = cat ? D.getItem(cat.slug, itemSelect.value) : null;
+        var itemName = item ? item.name : (itemSelect.value === "custom" ? "Something else (see notes)" : "");
+        return {
+          reference: (booking && booking.reference) || makeReference(),
+          customer_name: el("name").value.trim(),
+          phone: el("phone").value.trim(),
+          email: el("email").value.trim(),
+          state: el("state").value,
+          address: el("address").value.trim(),
+          room_type: el("room").value,
+          category: cat ? cat.name : "",
+          item_id: item ? item.id : (itemSelect.value || ""),
+          item_name: itemName,
+          visit_date: el("date").value,
+          visit_time: el("time").value,
+          budget: el("budget").value,
+          notes: el("notes").value.trim(),
+          visit_fee: C.payment.siteVisitFee ? Number(C.payment.siteVisitFee) : null,
+          status: "new",
+          payment_status: "pending"
+        };
+      }
+
+      /* ---------- Saving (Supabase when set up, otherwise skipped) ---------- */
+      function backendReady() {
+        return D.isSet(C.backend.supabaseUrl) && D.isSet(C.backend.supabaseAnonKey);
+      }
+
+      function saveBooking(data) {
+        if (!backendReady()) return Promise.resolve(false);
+        if (alreadySaved) return Promise.resolve(true);
+        var url = C.backend.supabaseUrl.replace(/\/$/, "") + "/rest/v1/" + C.backend.bookingsTable;
+        return fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": C.backend.supabaseAnonKey,
+            "Authorization": "Bearer " + C.backend.supabaseAnonKey,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(data)
+        }).then(function (res) {
+          alreadySaved = res.ok;
+          return res.ok;
+        }).catch(function () {
+          return false;
+        });
+      }
+
+      /* ---------- Paystack ---------- */
+      function loadPaystack() {
+        return new Promise(function (resolve, reject) {
+          if (window.PaystackPop) return resolve();
+          var s = document.createElement("script");
+          s.src = "https://js.paystack.co/v1/inline.js";
+          s.onload = function () { resolve(); };
+          s.onerror = function () { reject(new Error("Could not load Paystack")); };
+          document.head.appendChild(s);
+        });
+      }
+
+      function takePayment(data) {
+        return loadPaystack().then(function () {
+          return new Promise(function (resolve) {
+            var handler = window.PaystackPop.setup({
+              key: C.payment.paystackPublicKey,
+              email: data.email,
+              amount: Math.round(Number(C.payment.siteVisitFee) * 100),
+              currency: C.business.currency,
+              ref: data.reference,
+              metadata: {
+                custom_fields: [
+                  { display_name: "Customer", variable_name: "customer", value: data.customer_name },
+                  { display_name: "Purpose", variable_name: "purpose", value: "Site visit fee" }
+                ]
+              },
+              callback: function (response) {
+                resolve({ paid: true, reference: response.reference });
+              },
+              onClose: function () {
+                resolve({ paid: false });
+              }
+            });
+            handler.openIframe();
+          });
+        });
+      }
+
+      /* ---------- Success screen ---------- */
+      function whatsappText(data, paid) {
+        var lines = [
+          "Hello " + C.business.name + ", I have booked a site visit.",
+          "Reference: " + data.reference,
+          paid ? "Site visit fee: paid" : "Site visit fee: not yet paid",
+          "Name: " + data.customer_name,
+          "Phone: " + data.phone,
+          "State: " + data.state,
+          "Address: " + data.address,
+          "Preferred visit: " + data.visit_date + " (" + data.visit_time + ")"
+        ];
+        if (data.category || data.item_name) {
+          lines.push("Furniture: " + [data.category, data.item_name].filter(Boolean).join(" - "));
+        }
+        if (data.room_type) lines.push("Space: " + data.room_type);
+        if (data.budget) lines.push("Budget: " + data.budget);
+        if (data.notes) lines.push("Notes: " + data.notes);
+        return lines.join("\n");
+      }
+
+      function showSuccess(data, paid, saved) {
+        el("formWrap").hidden = true;
+
+        var title = paid ? "Payment received. Your visit is booked." : "Booking received";
+        el("successTitle").textContent = title;
+        el("successAlert").textContent = "Your reference is " + data.reference + ". Keep it for any follow-up.";
+
+        var text;
+        if (paid) {
+          text = "Thank you, " + data.customer_name.split(" ")[0] + ". We will confirm your visit time shortly. If you order, your visit fee is deducted from the final price.";
+        } else if (saved) {
+          text = "Thank you, " + data.customer_name.split(" ")[0] + ". We will contact you shortly to confirm your visit and the visit fee.";
+        } else {
+          text = "Thank you, " + data.customer_name.split(" ")[0] + ". To make sure we receive your request quickly, please tap the button below and send your details to us on WhatsApp.";
+        }
+        el("successText").textContent = text;
+
+        function row(label, value) {
+          return value ? '<div class="summary-row"><span>' + U.esc(label) + "</span><strong>" + U.esc(value) + "</strong></div>" : "";
+        }
+        el("successSummary").innerHTML =
+          row("Reference", data.reference) +
+          row("Name", data.customer_name) +
+          row("Visit date", data.visit_date + " (" + data.visit_time + ")") +
+          row("Location", data.address + ", " + data.state) +
+          row("Furniture", [data.category, data.item_name].filter(Boolean).join(" - ")) +
+          row("Visit fee", paid ? "Paid" : D.visitFeeLabel());
+
+        var wa = el("successWhatsapp");
+        if (D.isSet(C.business.whatsapp)) {
+          wa.href = U.whatsappHref(whatsappText(data, paid));
+        } else {
+          wa.href = "contact.html";
+          wa.removeAttribute("target");
+          wa.textContent = "Contact us";
+        }
+
+        el("successWrap").hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        U.refreshIcons();
+      }
+
+      /* ---------- Submit ---------- */
+      var submitBtn = el("submitBtn");
+      var alertBox = el("formAlert");
+
+      function setBusy(busy, label) {
+        submitBtn.disabled = busy;
+        submitBtn.textContent = busy ? label : (paymentReady() ? "Pay visit fee and book" : "Book my site visit");
+      }
+
+      function showAlert(message) {
+        alertBox.textContent = message;
+        alertBox.hidden = !message;
+      }
+
+      el("bookingForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        showAlert("");
+
+        if (el("website").value) return;      // spam trap
+        if (!validate()) return;
+
+        booking = collect();
+        setBusy(true, "Please wait...");
+
+        saveBooking(booking).then(function (saved) {
+          if (!paymentReady()) {
+            showSuccess(booking, false, saved);
+            return;
+          }
+          setBusy(true, "Opening payment...");
+          return takePayment(booking).then(function (result) {
+            if (result.paid) {
+              showSuccess(booking, true, saved);
+            } else {
+              setBusy(false);
+              showAlert("Payment was not completed. Your details are kept, so you can tap the button to try again.");
+            }
+          });
+        }).catch(function () {
+          setBusy(false);
+          showAlert("Something went wrong. Please check your connection and try again, or contact us on WhatsApp.");
+        });
+      });
+
+      U.refreshIcons();
+    })();
+  </script>
+</body>
+</html>
