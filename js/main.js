@@ -84,11 +84,29 @@
     return CATEGORY_ICONS[slug] || "armchair";
   }
 
-  function brandMark(color) {
-    return '<svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" style="color:' + color + '">' +
-      '<path d="M6 28V15a10 10 0 0 1 20 0v13z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>' +
-      '<path d="M11 28V16a5 5 0 0 1 10 0v12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
-      '</svg>';
+  /* The Drey Interior logo mark (gold DI on dark), as a small rounded tile */
+  function brandMark() {
+    return '<img src="assets/logo-mark.png" alt="" width="42" height="42" ' +
+      'style="width:42px;height:42px;border-radius:10px;display:block;flex:none">';
+  }
+
+  /* Browser tab icon and phone home-screen icon, set the same way on every page */
+  function setIcons() {
+    var old = document.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]');
+    Array.prototype.forEach.call(old, function (node) {
+      node.parentNode.removeChild(node);
+    });
+
+    var tab = document.createElement("link");
+    tab.rel = "icon";
+    tab.type = "image/png";
+    tab.href = "assets/favicon.png";
+    document.head.appendChild(tab);
+
+    var touch = document.createElement("link");
+    touch.rel = "apple-touch-icon";
+    touch.href = "assets/apple-touch-icon-1.png";
+    document.head.appendChild(touch);
   }
 
   var WHATSAPP_SVG =
@@ -110,6 +128,9 @@
     var header = $("#siteHeader");
     if (!header) return;
 
+    /* solid background so nothing shows through when the page scrolls under it */
+    header.style.background = "var(--bg)";
+
     var page = currentPage();
     var links = C.nav.map(function (item) {
       var target = item.href.split("#")[0];
@@ -120,7 +141,7 @@
     header.innerHTML =
       '<div class="container header-inner">' +
         '<a class="brand" href="index.html" aria-label="' + esc(C.business.name) + ' home">' +
-          brandMark("var(--teal)") + "<span>" + esc(C.business.name) + "</span>" +
+          brandMark() + "<span>" + esc(C.business.name) + "</span>" +
         "</a>" +
         '<button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">' +
           icon("menu") +
@@ -200,7 +221,7 @@
       '<div class="container">' +
         '<div class="footer-grid">' +
           '<div class="footer-about">' +
-            '<a class="brand" href="index.html">' + brandMark("var(--oak)") + "<span>" + esc(b.name) + "</span></a>" +
+            '<a class="brand" href="index.html">' + brandMark() + "<span>" + esc(b.name) + "</span></a>" +
             "<p>" + esc(b.shortDescription) + "</p>" +
           "</div>" +
           '<div><h4>Quick links</h4><ul>' + quickLinks + "</ul></div>" +
@@ -325,6 +346,7 @@
   /* ---------- START ---------- */
   function init() {
     /* things that do not depend on photos draw straight away */
+    setIcons();
     buildHeader();
     buildFooter();
     buildWhatsappButton();
