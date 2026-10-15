@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Jost:wght@300;400;500;600&display=swap">
   <link rel="stylesheet" href="css/styles.css">
+  <style>[hidden] { display: none !important; }</style>
 </head>
 <body class="page-category">
 
@@ -21,7 +22,7 @@
 
   <main id="main">
 
-    <!-- Banner: filled from the category in js/config.js -->
+    <!-- Banner: filled from the room in js/config.js -->
     <section class="page-hero">
       <div class="container">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -34,10 +35,18 @@
       </div>
     </section>
 
-    <!-- Furniture types in this room -->
+    <!-- Furniture in this room -->
     <section class="section">
       <div class="container">
         <div class="type-grid" id="typeGrid"></div>
+
+        <div id="emptyRoom" hidden>
+          <div class="section-head">
+            <h2>New designs coming soon</h2>
+            <p>We are adding photos of our work to this room. In the meantime, book a site visit and tell us what you have in mind.</p>
+          </div>
+          <a class="btn btn-primary" href="book.html">Book a site visit</a>
+        </div>
 
         <div id="notFound" hidden>
           <div class="section-head">
@@ -81,6 +90,7 @@
 
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/photos.js"></script>
   <script src="js/main.js"></script>
   <script>
     (function () {
@@ -89,69 +99,80 @@
       var D = window.DREY;
       var C = window.DREY_CONFIG;
       var U = window.DREYUI;
+      var ready = window.DREY_READY || Promise.resolve(false);
 
-      var params = new URLSearchParams(window.location.search);
-      var slug = params.get("c");
-      var category = D.getCategory(slug);
+      ready.then(function () {
+        var params = new URLSearchParams(window.location.search);
+        var slug = params.get("c");
+        var category = D.getCategory(slug);
 
-      var grid = document.getElementById("typeGrid");
-      var notFound = document.getElementById("notFound");
+        var grid = document.getElementById("typeGrid");
+        var notFound = document.getElementById("notFound");
 
-      if (!category) {
-        document.getElementById("categoryTitle").textContent = "Collections";
-        document.getElementById("categoryBlurb").textContent = "Choose a room to see what we build.";
-        document.getElementById("crumbCategory").textContent = "Not found";
-        grid.hidden = true;
-        notFound.hidden = false;
+        if (!category) {
+          document.getElementById("categoryTitle").textContent = "Collections";
+          document.getElementById("categoryBlurb").textContent = "Choose a room to see what we build.";
+          document.getElementById("crumbCategory").textContent = "Not found";
+          grid.hidden = true;
+          notFound.hidden = false;
+          U.refreshIcons();
+          return;
+        }
+
+        /* Page text */
+        document.title = category.name + " | " + C.business.name;
+        document.getElementById("categoryTitle").textContent = category.name;
+        document.getElementById("categoryBlurb").textContent = category.blurb;
+        document.getElementById("crumbCategory").textContent = category.name;
+
+        /* Furniture in this room, as cards */
+        if (!category.items.length) {
+          grid.hidden = true;
+          document.getElementById("emptyRoom").hidden = false;
+        } else {
+          grid.innerHTML = category.items.map(function (item) {
+            var img = U.itemImage(item);
+            var media = img
+              ? '<div class="category-card-media"' + U.bg(img) + "></div>"
+              : '<div class="category-card-media">' + U.icon(U.categoryIcon(category.slug)) + "</div>";
+            var price = item.price !== null && item.price !== undefined && item.price !== ""
+              ? " <span style=\"color: var(--teal); font-weight: 500;\">" + U.esc(D.formatPrice(item.price)) + "</span>" : "";
+            return '<a class="category-card" href="item.html?c=' + encodeURIComponent(category.slug) + "&i=" + encodeURIComponent(item.id) + '">' +
+              media +
+              '<div class="category-card-body"><h3>' + U.esc(item.name) + "</h3><p>" + U.esc(item.description) + price + "</p></div>" +
+              "</a>";
+          }).join("");
+        }
+
+        /* Other rooms */
+        var others = C.categories.filter(function (c) { return c.slug !== category.slug; });
+        if (others.length) {
+          document.getElementById("otherGrid").innerHTML = others.map(function (cat) {
+            var cover = U.coverFor(cat);
+            var media = cover
+              ? '<div class="category-card-media"' + U.bg(cover) + "></div>"
+              : '<div class="category-card-media">' + U.icon(U.categoryIcon(cat.slug)) + "</div>";
+            return '<a class="category-card" href="category.html?c=' + encodeURIComponent(cat.slug) + '">' +
+              media +
+              '<div class="category-card-body"><h3>' + U.esc(cat.name) + "</h3><p>" + U.esc(cat.blurb) + "</p></div>" +
+              "</a>";
+          }).join("");
+          document.getElementById("otherRooms").hidden = false;
+        }
+
+        /* Call to action buttons */
+        var wa = document.getElementById("ctaWhatsapp");
+        wa.href = U.whatsappHref("Hello " + C.business.name + ", I am interested in " + category.name.toLowerCase() + " furniture.");
+        if (D.isSet(C.business.whatsapp)) {
+          wa.target = "_blank";
+          wa.rel = "noopener";
+        } else {
+          wa.removeAttribute("target");
+          wa.textContent = "Contact us";
+        }
+
         U.refreshIcons();
-        return;
-      }
-
-      /* Page text */
-      document.title = category.name + " | " + C.business.name;
-      document.getElementById("categoryTitle").textContent = category.name;
-      document.getElementById("categoryBlurb").textContent = category.blurb;
-      document.getElementById("crumbCategory").textContent = category.name;
-
-      /* Furniture types as cards */
-      grid.innerHTML = category.items.map(function (item) {
-        var img = item.image || (item.gallery && item.gallery[0]) || "";
-        var media = img
-          ? '<div class="category-card-media"' + U.bg(img) + "></div>"
-          : '<div class="category-card-media">' + U.icon(U.categoryIcon(category.slug)) + "</div>";
-        return '<a class="category-card" href="item.html?c=' + encodeURIComponent(category.slug) + "&i=" + encodeURIComponent(item.id) + '">' +
-          media +
-          '<div class="category-card-body"><h3>' + U.esc(item.name) + "</h3><p>" + U.esc(item.description) + "</p></div>" +
-          "</a>";
-      }).join("");
-
-      /* Other rooms */
-      var others = C.categories.filter(function (c) { return c.slug !== category.slug; });
-      if (others.length) {
-        document.getElementById("otherGrid").innerHTML = others.map(function (cat) {
-          var media = cat.image
-            ? '<div class="category-card-media"' + U.bg(cat.image) + "></div>"
-            : '<div class="category-card-media">' + U.icon(U.categoryIcon(cat.slug)) + "</div>";
-          return '<a class="category-card" href="category.html?c=' + encodeURIComponent(cat.slug) + '">' +
-            media +
-            '<div class="category-card-body"><h3>' + U.esc(cat.name) + "</h3><p>" + U.esc(cat.blurb) + "</p></div>" +
-            "</a>";
-        }).join("");
-        document.getElementById("otherRooms").hidden = false;
-      }
-
-      /* Call to action buttons */
-      var wa = document.getElementById("ctaWhatsapp");
-      wa.href = U.whatsappHref("Hello " + C.business.name + ", I am interested in " + category.name.toLowerCase() + " furniture.");
-      if (D.isSet(C.business.whatsapp)) {
-        wa.target = "_blank";
-        wa.rel = "noopener";
-      } else {
-        wa.removeAttribute("target");
-        wa.textContent = "Contact us";
-      }
-
-      U.refreshIcons();
+      });
     })();
   </script>
 </body>

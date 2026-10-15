@@ -2,8 +2,9 @@
    DREY INTERIOR - MAIN SCRIPT
    Shared by every page. Builds the header, footer and
    floating WhatsApp button, and fills the homepage
-   sections from js/config.js.
-   Load order: lucide, config.js, then this file.
+   sections from js/config.js and the photos loaded by
+   js/photos.js.
+   Load order: lucide, config.js, photos.js, then this file.
    ===================================================== */
 
 (function () {
@@ -15,6 +16,8 @@
     console.error("config.js must load before main.js");
     return;
   }
+
+  var ready = window.DREY_READY || Promise.resolve(false);
 
   /* ---------- SMALL HELPERS ---------- */
   function $(selector, root) {
@@ -49,6 +52,22 @@
       el.classList.add("has-image");
     };
     img.src = src;
+  }
+
+  /* The first photo of a piece of furniture */
+  function itemImage(item) {
+    if (!item) return "";
+    return item.image || (item.gallery && item.gallery[0]) || "";
+  }
+
+  /* The cover photo of a room: its own cover, else the first photo inside it */
+  function coverFor(cat) {
+    if (cat.image) return cat.image;
+    for (var i = 0; i < cat.items.length; i++) {
+      var pic = itemImage(cat.items[i]);
+      if (pic) return pic;
+    }
+    return "";
   }
 
   var CATEGORY_ICONS = {
@@ -216,11 +235,13 @@
     });
   }
 
+  /* Hero and workshop photos: from the admin if uploaded, else from assets/images */
   function loadPhotos() {
-    var nodes = document.querySelectorAll("[data-image]");
-    Array.prototype.forEach.call(nodes, function (node) {
-      applyImage(node, node.getAttribute("data-image"));
-    });
+    var media = C.media || {};
+    var hero = $("#heroVisual");
+    var workshop = $("#scratchVisual");
+    if (hero) applyImage(hero, media.hero || hero.getAttribute("data-image"));
+    if (workshop) applyImage(workshop, media.workshop || workshop.getAttribute("data-image"));
   }
 
   function renderCategories() {
@@ -228,8 +249,9 @@
     if (!grid) return;
 
     grid.innerHTML = C.categories.map(function (cat) {
-      var media = cat.image
-        ? '<div class="category-card-media"' + bg(cat.image) + "></div>"
+      var cover = coverFor(cat);
+      var media = cover
+        ? '<div class="category-card-media"' + bg(cover) + "></div>"
         : '<div class="category-card-media">' + icon(categoryIcon(cat.slug)) + "</div>";
       return '<a class="category-card" href="category.html?c=' + encodeURIComponent(cat.slug) + '">' +
         media +
@@ -238,21 +260,33 @@
     }).join("");
   }
 
+  /* Featured pieces: the best piece from each room, pieces with photos first */
   function renderFeatured() {
     var grid = $("#featuredGrid");
+    var section = $("#featured");
     if (!grid) return;
 
-    var html = "";
-    C.categories.slice(0, 6).forEach(function (cat) {
-      var item = cat.items[0];
-      if (!item) return;
-      var img = item.image || cat.image;
-      html += '<a class="featured-card" href="item.html?c=' + encodeURIComponent(cat.slug) + "&i=" + encodeURIComponent(item.id) + '">' +
-        '<div class="featured-card-media"' + bg(img) + "></div>" +
-        '<div class="featured-card-body"><h3>' + esc(item.name) + "</h3><p>" + esc(cat.name) + "</p></div>" +
-        "</a>";
+    var picks = [];
+    C.categories.forEach(function (cat) {
+      var withPhoto = cat.items.filter(function (i) { return itemImage(i); })[0];
+      var item = withPhoto || cat.items[0];
+      if (item) picks.push({ cat: cat, item: item, photo: itemImage(item) });
     });
-    grid.innerHTML = html;
+
+    picks.sort(function (a, b) { return (b.photo ? 1 : 0) - (a.photo ? 1 : 0); });
+    picks = picks.slice(0, 6);
+
+    /* no photos yet: keep the homepage clean and hide this section */
+    var anyPhoto = picks.some(function (p) { return p.photo; });
+    if (section) section.hidden = !anyPhoto;
+    if (!anyPhoto) { grid.innerHTML = ""; return; }
+
+    grid.innerHTML = picks.map(function (p) {
+      return '<a class="featured-card" href="item.html?c=' + encodeURIComponent(p.cat.slug) + "&i=" + encodeURIComponent(p.item.id) + '">' +
+        '<div class="featured-card-media"' + bg(p.photo) + "></div>" +
+        '<div class="featured-card-body"><h3>' + esc(p.item.name) + "</h3><p>" + esc(p.cat.name) + "</p></div>" +
+        "</a>";
+    }).join("");
   }
 
   function renderProcess() {
@@ -290,17 +324,23 @@
 
   /* ---------- START ---------- */
   function init() {
+    /* things that do not depend on photos draw straight away */
     buildHeader();
     buildFooter();
     buildWhatsappButton();
     bindText();
-    renderCategories();
-    renderFeatured();
     renderProcess();
     renderHighlights();
     setupCtaWhatsapp();
-    loadPhotos();
     refreshIcons();
+
+    /* photo-dependent parts wait for the admin photos and furniture */
+    ready.then(function () {
+      renderCategories();
+      renderFeatured();
+      loadPhotos();
+      refreshIcons();
+    });
   }
 
   /* Shared tools for the other page scripts (category, item, booking) */
@@ -309,6 +349,8 @@
     icon: icon,
     bg: bg,
     applyImage: applyImage,
+    itemImage: itemImage,
+    coverFor: coverFor,
     categoryIcon: categoryIcon,
     refreshIcons: refreshIcons,
     whatsappHref: whatsappHref
